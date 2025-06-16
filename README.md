@@ -2,6 +2,12 @@
 
 ## How to run the project
 
+its important to get data from uniprot,
+,
+POSITIVE_URL = "https://www.ebi.ac.uk/interpro/api/protein/reviewed/entry/InterPro/IPR014720/?page_size=200&extra_fields=sequence"
+NEGATIVE_URL = "https://rest.uniprot.org/uniprotkb/search?format=fasta&query=(IPR014720)+AND+(length%3A%5B1+TO+200%5D)&size=500"
+#and place it in ./data folder
+
 ```bash
 # 1. Create virtual environment
 python -m venv venv
