@@ -37,7 +37,9 @@ def get_positive():
     with open(MARKED_PATH) as handle:
         for record in SeqIO.parse(handle, "fasta"):
             new_protein = Protein.from_fasta_record(record=record, positive=True)
-            marked_proteins.append(new_protein)  
+            sequence = new_protein.sequence
+            if len(sequence)< 400: 
+                marked_proteins.append(new_protein)  
     return np.array(marked_proteins, dtype=object)
 
 def get_negative():
@@ -48,7 +50,9 @@ def get_negative():
     with open(NEGATIVE_PATH) as handle:
         for record in SeqIO.parse(handle, "fasta"):
             new_protein = Protein.from_fasta_record(record=record, positive=False)
-            negative_proteins.append(new_protein)
+            sequence = new_protein.sequence
+            if len(sequence)< 400:  
+                negative_proteins.append(new_protein)
     return np.array(negative_proteins, dtype=object)
 
 

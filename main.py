@@ -15,6 +15,8 @@ negative_proteins = get_negative()
 all_proteins = np.array([])
 all_proteins = np.append(all_proteins, marked_proteins)
 all_proteins = np.append(all_proteins, negative_proteins)
+
+
 print(f"positive protein sequence max len: {Protein.positive_max_len}")
 print(f"negative protein sequence max len: {Protein.negative_max_len}")
 
