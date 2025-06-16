@@ -18,12 +18,12 @@ class Protein:
         sequence = str(record.seq)
 
         sequence_len = len(record.seq)         
-        if (sequence_len > Protein.max_sequence_len):
-            Protein.max_sequence_len = sequence_len
-        if positive and sequence_len > Protein.positive_max_len: 
-            Protein.positive_max_len = sequence_len
-        if not positive and sequence_len > Protein.negative_max_len: 
-            Protein.negative_max_len = sequence_len 
+        # if (sequence_len > Protein.max_sequence_len):
+        #     Protein.max_sequence_len = sequence_len
+        # if positive and sequence_len > Protein.positive_max_len: 
+        #     Protein.positive_max_len = sequence_len
+        # if not positive and sequence_len > Protein.negative_max_len: 
+        #     Protein.negative_max_len = sequence_len 
 
         if len(parts) > 1 and "(" in parts[1]:
                 domain_info = parts[1]

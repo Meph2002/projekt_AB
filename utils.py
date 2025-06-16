@@ -1,15 +1,21 @@
 import numpy as np 
 import random
-def encode(sequence: str, max_length=100):
+DEFAULT_AA = 'L'
+def encode(sequence: str, max_length=400):
     amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
     aa_to_index = {aa: i for i, aa in enumerate(amino_acids)}
-    
+
     one_hot = np.zeros((max_length, len(amino_acids)))
-    
-    for i, aa in enumerate(sequence[:max_length]):  # Truncate if too long
-        if aa in aa_to_index:
-            one_hot[i, aa_to_index[aa]] = 1
-            
+
+    for i in range(max_length):
+        if i < len(sequence):
+            aa = sequence[i]
+            index = aa_to_index.get(aa, aa_to_index[DEFAULT_AA])
+        else:
+            index = aa_to_index[DEFAULT_AA]
+
+        one_hot[i, index] = 1
+
     return one_hot
 
 
@@ -24,3 +30,9 @@ def split_data(proteins, split_frac=0.8):
     test_data = sequences[split_idx:]
 
     return train_data, test_data
+
+def motiv(sequence: str):
+    for i in range(len(sequence) - 2):
+        triplet = sequence[i:i+3]
+        print(triplet)
+

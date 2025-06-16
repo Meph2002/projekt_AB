@@ -24,15 +24,11 @@ NEGATIVE_PATH = "data/UniProtKB_seq_1_200.fasta"
 def prepare_data_folder():
     folder_name = "data" 
     if not os.path.exists(folder_name):
-        os.makedirs(folder_name)
-        print(f"Folder '{folder_name}' został utworzony.")
-    else:
-        print(f"Folder '{folder_name}' już istnieje.")
+        print(f"brak folderu z danymi ./data")
+        sys.exit(0)
 
 def get_positive():
     marked_proteins = []
-    if not os.path.isfile(MARKED_PATH): 
-        download_positive()
 
     with open(MARKED_PATH) as handle:
         for record in SeqIO.parse(handle, "fasta"):
@@ -43,9 +39,6 @@ def get_positive():
     return np.array(marked_proteins, dtype=object)
 
 def get_negative():
-    if not os.path.isfile(NEGATIVE_PATH): 
-        download_negative()
-
     negative_proteins = []
     with open(NEGATIVE_PATH) as handle:
         for record in SeqIO.parse(handle, "fasta"):
@@ -56,130 +49,130 @@ def get_negative():
     return np.array(negative_proteins, dtype=object)
 
 
-def download_negative():
-    re_next_link = re.compile(r'<(.+)>; rel="next"')
-    retries = Retry(total=5, backoff_factor=0.25, status_forcelist=[500, 502, 503, 504])
-    session = requests.Session()
-    session.mount("https://", HTTPAdapter(max_retries=retries))
+# def download_negative():
+#     re_next_link = re.compile(r'<(.+)>; rel="next"')
+#     retries = Retry(total=5, backoff_factor=0.25, status_forcelist=[500, 502, 503, 504])
+#     session = requests.Session()
+#     session.mount("https://", HTTPAdapter(max_retries=retries))
 
-    def get_next_link(headers):
-        if "Link" in headers:
-            match = re_next_link.match(headers["Link"])
-            if match:
-                return match.group(1)
+#     def get_next_link(headers):
+#         if "Link" in headers:
+#             match = re_next_link.match(headers["Link"])
+#             if match:
+#                 return match.group(1)
 
-    def get_batch(batch_url):
-        while batch_url:
-            response = session.get(batch_url)
-            response.raise_for_status()
-            total = response.headers["x-total-results"]
-            yield response, total
-            batch_url = get_next_link(response.headers)
-    url = NEGATIVE_URL
-    progress = 0
-    with open(NEGATIVE_PATH, 'w') as f:
-        for batch, total in get_batch(url):
-            lines = batch.text.splitlines()
-            if not progress:
-                print(lines[0], file=f)
-            for line in lines[1:]:
-                print(line, file=f)
-            progress += len(lines[1:])
-            print(f'Downloaded negative sequences: {progress} / {total}')
+#     def get_batch(batch_url):
+#         while batch_url:
+#             response = session.get(batch_url)
+#             response.raise_for_status()
+#             total = response.headers["x-total-results"]
+#             yield response, total
+#             batch_url = get_next_link(response.headers)
+#     url = NEGATIVE_URL
+#     progress = 0
+#     with open(NEGATIVE_PATH, 'w') as f:
+#         for batch, total in get_batch(url):
+#             lines = batch.text.splitlines()
+#             if not progress:
+#                 print(lines[0], file=f)
+#             for line in lines[1:]:
+#                 print(line, file=f)
+#             progress += len(lines[1:])
+#             print(f'Downloaded negative sequences: {progress} / {total}')
 
 
-HEADER_SEPARATOR = "|"
-LINE_LENGTH = 80
-def download_positive():
-    # Wyłącz weryfikację SSL, aby uniknąć problemów z konfiguracją
-    context = ssl._create_unverified_context()
+# HEADER_SEPARATOR = "|"
+# LINE_LENGTH = 80
+# def download_positive():
+#     # Wyłącz weryfikację SSL, aby uniknąć problemów z konfiguracją
+#     context = ssl._create_unverified_context()
 
-    next = POSITIVE_URL
-    last_page = False
-    attempts = 0
+#     next = POSITIVE_URL
+#     last_page = False
+#     attempts = 0
     
-    # Pobierz całkowitą liczbę wyników dla paska postępu
-    try:
-        req = request.Request(POSITIVE_URL, headers={"Accept": "application/json"})
-        res = request.urlopen(req, context=context)
-        payload = json.loads(res.read().decode())
-        total_results = payload["count"]
-    except Exception as e:
-        total_results = "unknown"
-        print(f"Could not get total count: {e}")
+#     # Pobierz całkowitą liczbę wyników dla paska postępu
+#     try:
+#         req = request.Request(POSITIVE_URL, headers={"Accept": "application/json"})
+#         res = request.urlopen(req, context=context)
+#         payload = json.loads(res.read().decode())
+#         total_results = payload["count"]
+#     except Exception as e:
+#         total_results = "unknown"
+#         print(f"Could not get total count: {e}")
 
-    progress = 0
+#     progress = 0
     
-    with open(MARKED_PATH, 'w') as fasta_file:
-        while next:
-            try:
-                req = request.Request(next, headers={"Accept": "application/json"})
-                res = request.urlopen(req, context=context)
+#     with open(MARKED_PATH, 'w') as fasta_file:
+#         while next:
+#             try:
+#                 req = request.Request(next, headers={"Accept": "application/json"})
+#                 res = request.urlopen(req, context=context)
                 
-                if res.status == 408:
-                    sleep(61)
-                    continue
-                elif res.status == 204:
-                    break
+#                 if res.status == 408:
+#                     sleep(61)
+#                     continue
+#                 elif res.status == 204:
+#                     break
                 
-                payload = json.loads(res.read().decode())
-                next = payload["next"]
-                attempts = 0
+#                 payload = json.loads(res.read().decode())
+#                 next = payload["next"]
+#                 attempts = 0
                 
-                if not next:
-                    last_page = True
+#                 if not next:
+#                     last_page = True
                     
-            except HTTPError as e:
-                if e.code == 408:
-                    sleep(61)
-                    continue
-                else:
-                    if attempts < 3:
-                        attempts += 1
-                        sleep(61)
-                        continue
-                    else:
-                        sys.stderr.write("LAST URL: " + next)
-                        raise e
+#             except HTTPError as e:
+#                 if e.code == 408:
+#                     sleep(61)
+#                     continue
+#                 else:
+#                     if attempts < 3:
+#                         attempts += 1
+#                         sleep(61)
+#                         continue
+#                     else:
+#                         sys.stderr.write("LAST URL: " + next)
+#                         raise e
 
-            current_batch_size = len(payload["results"])
-            progress += current_batch_size
-            print(f'Downloaded positive sequences: {progress} / {total_results}')
+#             current_batch_size = len(payload["results"])
+#             progress += current_batch_size
+#             print(f'Downloaded positive sequences: {progress} / {total_results}')
 
-            for item in payload["results"]:
-                entries = None
-                if "entries" in item:
-                    entries = item["entries"]
+#             for item in payload["results"]:
+#                 entries = None
+#                 if "entries" in item:
+#                     entries = item["entries"]
                 
-                if entries is not None:
-                    entries_header = "-".join(
-                        [entry["accession"] + "(" + ";".join(
-                            [
-                                ",".join(
-                                    [str(fragment["start"]) + "..." + str(fragment["end"]) 
-                                     for fragment in locations["fragments"]]
-                                ) for locations in entry["entry_protein_locations"]
-                            ]
-                        ) + ")" for entry in entries]
-                    )
-                    fasta_file.write(">" + item["metadata"]["accession"] + HEADER_SEPARATOR
-                                    + entries_header + HEADER_SEPARATOR
-                                    + item["metadata"]["name"] + "\n")
-                else:
-                    fasta_file.write(">" + item["metadata"]["accession"] + HEADER_SEPARATOR 
-                                    + item["metadata"]["name"] + "\n")
+#                 if entries is not None:
+#                     entries_header = "-".join(
+#                         [entry["accession"] + "(" + ";".join(
+#                             [
+#                                 ",".join(
+#                                     [str(fragment["start"]) + "..." + str(fragment["end"]) 
+#                                      for fragment in locations["fragments"]]
+#                                 ) for locations in entry["entry_protein_locations"]
+#                             ]
+#                         ) + ")" for entry in entries]
+#                     )
+#                     fasta_file.write(">" + item["metadata"]["accession"] + HEADER_SEPARATOR
+#                                     + entries_header + HEADER_SEPARATOR
+#                                     + item["metadata"]["name"] + "\n")
+#                 else:
+#                     fasta_file.write(">" + item["metadata"]["accession"] + HEADER_SEPARATOR 
+#                                     + item["metadata"]["name"] + "\n")
 
-                seq = item["extra_fields"]["sequence"]
-                fastaSeqFragments = [seq[0+i:LINE_LENGTH+i] for i in range(0, len(seq), LINE_LENGTH)]
-                for fastaSeqFragment in fastaSeqFragments:
-                    fasta_file.write(fastaSeqFragment + "\n")
+#                 seq = item["extra_fields"]["sequence"]
+#                 fastaSeqFragments = [seq[0+i:LINE_LENGTH+i] for i in range(0, len(seq), LINE_LENGTH)]
+#                 for fastaSeqFragment in fastaSeqFragments:
+#                     fasta_file.write(fastaSeqFragment + "\n")
             
-            if next:
-                sleep(1)
+#             if next:
+#                 sleep(1)
 
 
-if __name__ == "__main__":
-    prepare_data_folder()
-    download_positive()
-    download_negative()
-    print("Dane zostały zapisane do plików marked.fasta i UniProtKB_seq_1_200.fasta")
+# if __name__ == "__main__":
+#     prepare_data_folder()
+#     download_positive()
+#     download_negative()
+#     print("Dane zostały zapisane do plików marked.fasta i UniProtKB_seq_1_200.fasta")
