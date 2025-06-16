@@ -54,8 +54,8 @@ class Protein:
 
 class Domain: 
         def __init__(self, start = 0, end = 0):
-            self.start = start,
-            self.end = end,
+            self.start = start
+            self.end = end
 
         def __str__(self):
                 return (f"Domain: {self.start} - {self.end}) \n")
