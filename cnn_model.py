@@ -106,7 +106,7 @@ def plot_training(train_losses, test_accuracies):
     plt.show()
 
 if __name__ == "__main__":
-    print("Start CNN script")
+    print("Start CNN script!")
     from data_provider import get_positive, get_negative
     from protein import Protein
 
