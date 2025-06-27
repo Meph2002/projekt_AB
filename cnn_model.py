@@ -9,14 +9,14 @@ from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
 AMINO_ACIDS = 'ACDEFGHIKLMNPQRSTVWY'
 AA_TO_INDEX = {aa: i for i, aa in enumerate(AMINO_ACIDS)}
-MAX_LEN = 500  # ustawić według max długości sekwencji (można np. Protein.max_len)
+MAX_LEN = 500
 
 def one_hot_encode(seq, max_len=MAX_LEN):
     encoding = np.zeros((max_len, len(AMINO_ACIDS)), dtype=np.float32)
     for i, aa in enumerate(seq[:max_len]):
         if aa in AA_TO_INDEX:
             encoding[i, AA_TO_INDEX[aa]] = 1.0
-    return encoding  # [max_len, 20]
+    return encoding
 
 class ProteinDataset(Dataset):
     def __init__(self, proteins):
@@ -25,7 +25,7 @@ class ProteinDataset(Dataset):
         for protein in proteins:
             self.X.append(one_hot_encode(protein.sequence))
             self.y.append(protein.label)
-        self.X = torch.tensor(np.array(self.X)).permute(0, 2, 1)  # [N, C, L]
+        self.X = torch.tensor(np.array(self.X)).permute(0, 2, 1)
         self.y = torch.tensor(np.array(self.y)).long()
 
     def __len__(self):
@@ -120,11 +120,6 @@ if __name__ == "__main__":
     train_proteins = all_proteins[:split_idx]
     test_proteins = all_proteins[split_idx:]
 
-    train_set = ProteinDataset(train_proteins)
-    test_set = ProteinDataset(test_proteins)
-
-    model, losses, accs = train_model(train_set, test_set, epochs=10)
-
-    plot_training(losses, accs)
+  
 
 
