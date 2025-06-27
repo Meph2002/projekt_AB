@@ -4,11 +4,12 @@ class Protein:
     max_sequence_len = 0
     negative_max_len = 0 
     positive_max_len = 0
-    def __init__(self, name: str, id: str, sequence: str, domains:list = None):
+    def __init__(self, name: str, id: str, sequence: str,label, domains:list = None):
         self.name = name
         self.id = id
         self.sequence =sequence
         self.domains = np.array([]) if domains is None else np.array(domains)
+        self.label = label
     
     def from_fasta_record(record, positive):
         parts = record.description.split("|")
@@ -38,6 +39,8 @@ class Protein:
                 name=name,
                 sequence=sequence,
                 domains=domains,
+                label=1 if positive else 0
+
             )
 
     def __str__(self):

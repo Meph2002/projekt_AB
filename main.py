@@ -28,3 +28,11 @@ analyze(marked_proteins=marked_proteins, all_proteins=all_proteins)
 train, test =  split_data(all_proteins)
 print(test)
 print(train.shape)
+
+from cnn_model import ProteinDataset, train_model, plot_training
+
+train_set = ProteinDataset(train)
+test_set = ProteinDataset(test)
+
+model, losses, accs = train_model(train_set, test_set, epochs=15)
+plot_training(losses, accs)

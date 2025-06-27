@@ -32,7 +32,7 @@ def split_data(proteins, split_frac=0.8):
     return train_data, test_data
 
 def motiv(sequence: str):
-    for i in range(len(sequence) - 2):
-        triplet = sequence[i:i+3]
+    for i in range(len(sequence) - 4):
+        triplet = sequence[i:i+5]
         print(triplet)
 
