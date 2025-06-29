@@ -53,4 +53,41 @@ def analyze(marked_proteins,all_proteins):
     print(f"max number of domains {max_domains}")
     print(f"proteins with domains: {protains_counter[0]}")
     print(f"proteins without domains: {protains_counter[1]}")
+
+
+from collections import Counter
+def count_domain_sequence_frequencies(protein_list):
+    domain_seqs = []
+    for protein in protein_list:
+        for domain in protein.domains:
+            # Zabezpieczenie: sprawdzamy poprawność indeksów
+            if 0 <= domain.start < domain.end <= len(protein.sequence):
+                domain_seq = protein.sequence[domain.start:domain.end]
+                domain_seqs.append(domain_seq)
+    return Counter(domain_seqs)
+
+import matplotlib.pyplot as plt
+
+def plot_domain_pie_chart(domain_counter):
+    # Odfiltrowanie zera i posortowanie po liczności
+    labels = list(domain_counter.keys())
+    sizes = list(domain_counter.values())
+
+    # Możesz ograniczyć do np. top 10 domen, a resztę połączyć w "inne"
+    max_labels = 10
+    if len(labels) > max_labels:
+        labels_sorted = sorted(domain_counter.items(), key=lambda x: x[1], reverse=True)
+        top = labels_sorted[:max_labels]
+        other = labels_sorted[max_labels:]
+        
+        labels = [label for label, _ in top] + ['inne']
+        sizes = [count for _, count in top] + [sum([count for _, count in other])]
+
+    # Wykres kołowy
+    plt.figure(figsize=(8, 8))
+    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
+    plt.title("Częstotliwość unikalnych sekwencji domen")
+    plt.axis('equal')  # Równe osie dla pełnego koła
+    plt.show()
+
     

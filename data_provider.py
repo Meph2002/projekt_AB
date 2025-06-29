@@ -7,7 +7,7 @@ import os
 
 
 def prepare_data_folder():
-    folder_name = "data" 
+    folder_name = "./data" 
     if not os.path.exists(folder_name):
         print(f"brak folderu z danymi ./data")
         sys.exit(0)

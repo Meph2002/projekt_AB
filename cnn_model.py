@@ -92,33 +92,13 @@ def train_model(train_set, test_set, epochs=10, max_len=500, batch_size=32, lr=1
     return model, train_losses, test_accuracies
 
 
-def plot_training(train_losses, test_accuracies):
-    fig, ax1 = plt.subplots()
-    ax1.plot(train_losses, label='Loss', color='blue')
-    ax1.set_xlabel("Epoch")
-    ax1.set_ylabel("Loss", color='blue')
-    ax2 = ax1.twinx()
-    ax2.plot(test_accuracies, label='Accuracy', color='green')
-    ax2.set_ylabel("Accuracy", color='green')
-    plt.title("Training Loss & Test Accuracy")
-    plt.show()
-
-
-if __name__ == "__main__":
-    print("Start CNN script!")
-    positive_dataset_path = 'data/marked.fasta'
-    negative_dataset_path = "data/UniProtKB_seq_1_200.fasta"
-
-    positives = get_positive(positive_dataset_path)
-    negatives = get_negative(negative_dataset_path)
-
-    all_proteins = np.concatenate([positives, negatives])
-    np.random.shuffle(all_proteins)
-
-    split_idx = int(0.8 * len(all_proteins))
-    train_proteins = all_proteins[:split_idx]
-    test_proteins = all_proteins[split_idx:]
-
-  
-
-
+# def plot_training(train_losses, test_accuracies):
+#     fig, ax1 = plt.subplots()
+#     ax1.plot(train_losses, label='Loss', color='blue')
+#     ax1.set_xlabel("Epoch")
+#     ax1.set_ylabel("Loss", color='blue')
+#     ax2 = ax1.twinx()
+#     ax2.plot(test_accuracies, label='Accuracy', color='green')
+#     ax2.set_ylabel("Accuracy", color='green')
+#     plt.title("Training Loss & Test Accuracy")
+#     plt.show()

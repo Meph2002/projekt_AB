@@ -1,0 +1,17 @@
+class Protein:
+
+    def __init__(self, name: str, id: str, sequence: str,label, domains:list = None):
+        self.name = name
+        self.id = id
+        self.sequence =sequence
+        self.domains = np.array([]) if domains is None else np.array(domains)
+        self.label = label
+
+
+
+        class Domain: 
+    def __init__(self, start = 0, end = 0):
+        self.start = start
+        self.end = end
+
+mam tablice obiektów protein, policz częstotliwośc domen w sekwencjach.
