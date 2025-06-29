@@ -1,3 +1,5 @@
+
+
 def count_domains(proteins_with_domains):
     number_of_domains = 0
     for protein in proteins_with_domains:
@@ -5,11 +7,13 @@ def count_domains(proteins_with_domains):
         number_of_domains += length
     
     return number_of_domains
-    
+
+
 def mean_number_of_domains(proteins_with_domains):
     number_of_domains = count_domains(proteins_with_domains=proteins_with_domains)
     lenght = len(proteins_with_domains)
     return round(number_of_domains/lenght, 2)
+
 
 def find_max_number_of_domains(proteins):
     number_of_domains = 0
@@ -19,6 +23,7 @@ def find_max_number_of_domains(proteins):
             number_of_domains = lenght 
     return number_of_domains
 
+
 def count_proteins_with_domains(proteins):
     with_domains = 0
     for protein in proteins:
@@ -27,7 +32,8 @@ def count_proteins_with_domains(proteins):
             with_domains += 1
 
     all_proteins_len = len(proteins)
-    return (with_domains, all_proteins_len-with_domains)
+    return with_domains, all_proteins_len-with_domains
+
 
 def sequece_len(proteins): 
      for protein in proteins:
@@ -35,8 +41,6 @@ def sequece_len(proteins):
         # print(lenght)
 
         
-
-
 def analyze(marked_proteins,all_proteins):
     sequece_len(all_proteins)
     number_of_domains = count_domains(marked_proteins)
